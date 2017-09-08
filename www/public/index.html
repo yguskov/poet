@@ -55,7 +55,15 @@
 	<link href='http://fonts.googleapis.com/css?family=Wire+One' rel='stylesheet' type='text/css'>
 	<link href="https://fonts.googleapis.com/css?family=Lato|Oswald:200,300,400,500,600,700|Yanone+Kaffeesatz" rel="stylesheet">
 
+	<!-- Load js libs only when the page is loaded. -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<script src="assets/js/modernizr.custom.72241.js"></script>
+	<!-- slick <script src="modules/angular-slick/dist/slick.js"></script> -->
+	<script src="modules/slick-carousel/slick/slick.js"></script>
+
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script src="modules/angular-slick-carousel/dist/angular-slick.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-sanitize.js"></script>
 	<script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
@@ -63,6 +71,12 @@
 	<script src="assets/russian-stemmer.global.min.js" type="text/javascript"></script>
 
 	<!--<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" rel="stylesheet">-->
+
+
+        <link rel="stylesheet" href="modules/slick-carousel/slick/slick.css">
+        <link rel="stylesheet" href="modules/slick-carousel/slick/slick-theme.css">
+<!--        <script src="modules/jquery/jquery.js"></script>
+        <script src="modules/angular/angular.js"></script> -->
 </head>
 
 <!-- use "theme-invert" class on bright backgrounds, also try "text-shadows" class -->
@@ -127,6 +141,8 @@
 			</div>
 		</div>
 
+
+
 	</div>
 </section>
 
@@ -135,18 +151,24 @@
 	<div class="container">
 
 		<div class="row">
-			<div class="col-md-10 col-lg-10 col-md-offset-1 col-lg-offset-1 text-center">
+			<div class="col-md-8 col-lg-8 col-md-offset-2 col-lg-offset-2 text-center ">
 
 				<!-- Site Title, your name, HELLO msg, etc. -->
-				<h3 class="title" style="font-family: 'Oswald'; font-weight: 200; font-size: 1.5em; font-style: normal;">Анатолий Алексеевич Гуськов</h3>
+				<h3 class="title" style="font-family: 'Oswald'; font-weight: 200; font-size: 1.5em; font-style: normal;">Анатолий Гуськов</h3>
+				<h5>11.12.1931 – 24.08.2015</h5>
 				<br>
 				<h2 class="subtitle">Поэт и Физик</h2>
 
 				<!-- Short introductory (optional) -->
-				<h3 class="tagline">
-					Нужен текст<br>
-					Нужент текст.
-				</h3>
+				<div class="text-left">
+				<p>
+					Родился в городе Барнауле в семье помыкавшихся и бежавших в Сибирь по типичным для 20 века обстоятельствам Алексея и Анны Гуськовых. Физиком стал в силу ума и образования, полученного в Томском государственном университете, а поэтом - факультативно – в силу таланта и остроумия.
+				</p>
+				<p>Большую часть жизни прожил в Новосибирске, где работал на благо молодой – стареющей вместе с ним – советской телекоммуникации и военной науки. Жил с семьей в маленькой, весьма захламленной квартирке, откуда каждый день ездил за 35 км на работу в один и тот же НИИ. Спроектировал антенны, которые продолжают служить на переднем крае российского ВПК и крепко затыкают дыры в оборонном щите страны.
+				</p>
+				<p>Эти стихи написаны им, в основном, на листочках и перфокартах в автобусе №8, в котором, по собственным подсчетам, за время трудовой биографии он проделал путь, равный расстоянию до Луны, и уверенно двигался обратно. Никогда не открывал рта, чтобы сказать банальность, поэтому многое сказанное продолжает ежедневную жизнь в семейных цитатах. К богатству, степеням и славе не стремился, вместо автомобиля до глубокой старости довольствовался велосипедом, про одежду утверждал, что она требуется ему, только чтобы прикрыть срам. Был дважды женат, и оба раза – счастливо. С удовольствием проводил время среди книг, жены и детей, иногда принуждаемый семьей к садоводству, которое от души ненавидел. В комнате, из которой он под страхом родительского проклятья не разрешал ничего выкидывать, по всем углам были рассованы стихи и чертежи. Стихи собраны по ящикам и щелям и опубликованы здесь семьей – с любовью и благодарностью за каждый день, прожитый вместе.
+				</p>
+				</div>
 
 				<!-- Nice place to describe your site in a sentence or two -->
 				<p><a href="/download/" class="btn btn-default btn-lg">Download template now</a></p>
@@ -166,20 +188,22 @@
 
 		<div class="row">
 			<div id="list" class="col-sm-8 col-sm-offset-2 fading">
-			<div class="row">
-				<div ng-repeat="poem in list" class="col-sm-6">
-					<div class="thumbnail quatrain-container">
-						<div class="caption">
-							<h4 class="poem-title">{{poem.title}}</h4>
-							<p ng-bind-html="poem.description | nl2br"></p>
-							<p><a ng-click="open(poem._id)" class="btn btn-primary" role="button">Читать</a> <a href="#" ng-click="edit(poem._id)" class="btn btn-default" role="button">Редактировать</a></p>
+				<div class="row">
+					<div class="slider single-item ng-isolate-scope slick-slider" settings="slickConfig">
+						<div ng-repeat="page in listIndex">
+							<div ng-repeat="poem in list | limitTo: pageSize:page" class="col-sm-6">
+							<div class="thumbnail quatrain-container">
+								<div class="caption">
+									<h4 class="poem-title">{{poem.title}}</h4>
+									<p ng-bind-html="poem.description | nl2br"></p>
+									<p><a ng-click="open(poem._id)" class="btn btn-primary" role="button">Читать</a> <a href="#" ng-click="edit(poem._id)" class="btn btn-default" role="button">Редактировать</a></p>
+								</div>
+							</div>
+							</div>
 						</div>
 					</div>
 				</div>
-
 			</div>
-			</div>
-
 		</div>
 
 	</div>
@@ -286,13 +310,10 @@
 </section>
 
 
-<!-- Load js libs only when the page is loaded. -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-<script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-<script src="assets/js/modernizr.custom.72241.js"></script>
-<!-- Custom template scripts -->
+<!-- scripts -->
 <script src="assets/js/magister.js"></script>
 <script src="assets/js/main.js"></script>
+
 
 </body>
 </html>

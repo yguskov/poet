@@ -2,7 +2,9 @@
  * Created by yguskov on 22.06.17.
  */
 
-var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate'/*, 'ngRoute'*/]).filter('nl2br', ['$sce', function($sce){
+var pageSize = 6;
+
+var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate'/*, 'ngRoute'*/, 'slickCarousel']).filter('nl2br', ['$sce', function($sce){
     return function(val) {
         var str =  val.replace(/\n/g, '<br>');
         return $sce.trustAsHtml(str);
@@ -22,6 +24,16 @@ app.controller('common', [ '$scope', '$http', '$location', '$window', function($
     $scope.lastName= "G";
     $scope.title = $scope.firstName + ' ' + $scope.lastName;
     $scope.active = '#about';
+    $scope.listIndex = [];
+    $scope.pageSize = pageSize;
+
+    $scope.setList = function(data) {
+        $scope.list = data;
+
+        for (var i = 0; i < data.length/pageSize; i++) {
+            $scope.listIndex.push(i*pageSize);
+        }
+    }
 
     $scope.selectMenu = function(id) {
         switch (id) {
@@ -30,11 +42,18 @@ app.controller('common', [ '$scope', '$http', '$location', '$window', function($
 
             case '#all' :
                 $http.get('http://agu.181.rsdemo.ru/api/articles/', { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
-                    $scope.list = resp.data;
+                    $scope.setList(resp.data);
+
+                    setTimeout(function(){ $('.slider').slick({dots: true}); }, 2000);
                 });
                 break;
         }
     };
+
+    $scope.isPageHide = function(offset) {
+        if(offset>=$scope.pageSize) return 'hide';
+        else return '';
+    }
 
     $scope.edit = function(id) {
         if(id!=0) {
@@ -55,10 +74,12 @@ app.controller('common', [ '$scope', '$http', '$location', '$window', function($
 
     $scope.open = function(id) {
         if(id!=0) {
-//            $location.path('http://agu.181.rsdemo.ru/#!?poem='+id);
+            // $location.path('http://agu.181.rsdemo.ru/#!?poem='+id);
             $location.search('poem', id);
+
+            $scope.openPoem(id);
+
             console.log($location.absUrl());
-            $window.location.reload();
         }
     };
 
@@ -104,6 +125,16 @@ app.controller('common', [ '$scope', '$http', '$location', '$window', function($
     $scope.isDefined = function (thing) {
         return !(typeof thing === "undefined");
     };
+
+    $scope.openPoem = function(id) {
+        $http.get('http://agu.181.rsdemo.ru/api/articles/' + id, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
+            $scope.article = resp.data.article;
+            $scope.article.quatrains = resp.data.article.text.split("\n\n");
+            current_item = 1;
+            $('section').hide();
+            $('#about').show();
+        });
+    }
 }]);
 
 app.controller('search', [ '$scope', '$http', '$location', function($scope, $http, $location) {
@@ -120,16 +151,17 @@ app.controller('search', [ '$scope', '$http', '$location', function($scope, $htt
             'password': 'abc1234'
         }, {headers: {'Content-Type': 'application/json'}}).then(function (resp) {
             localStorage.setItem('token', resp.data.access_token);
-            console.log(1);
+
             if($location.search().poem!=undefined) {
-                console.log(2);
-                $http.get('http://agu.181.rsdemo.ru/api/articles/' + $location.search().poem, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
-                    $scope.article = resp.data.article;
-                    $scope.article.quatrains = resp.data.article.text.split("\n\n");
-                    current_item = 1;
-                    $('section').hide();
-                    $('#about').show();
-                });
+
+                $scope.openPoem($location.search().poem);
+                // $http.get('http://agu.181.rsdemo.ru/api/articles/' + $location.search().poem, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
+                //     $scope.article = resp.data.article;
+                //     $scope.article.quatrains = resp.data.article.text.split("\n\n");
+                //     current_item = 1;
+                //     $('section').hide();
+                //     $('#about').show();
+                // });
             }
 
         });
@@ -137,6 +169,17 @@ app.controller('search', [ '$scope', '$http', '$location', function($scope, $htt
 
 
     var stemmer = new RussianStemmer();
+
+    $scope.openPoem = function(id) {
+        $http.get('http://agu.181.rsdemo.ru/api/articles/' + id, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
+            $scope.article = resp.data.article;
+            $scope.article.quatrains = resp.data.article.text.split("\n\n");
+            $scope.$apply();
+            current_item = 1;
+            $('section').hide();
+            $('#about').show();
+        });
+    }
 
     $scope.init = function () {
 
@@ -295,4 +338,28 @@ app.component('modalComponent', {
     }
 });
 
+// slick init
+function createSlick(){
+
+    $(".slider").not('.slick-initialized').slick({
+        autoplay: false,
+        dots: true,
+        responsive: [{
+            breakpoint: 500,
+            settings: {
+                dots: false,
+                arrows: false,
+                infinite: false,
+                slidesToShow: 1,
+                slidesToScroll: 1
+            }
+        }]
+    });
+
+}
+
+// createSlick();
+
+//Now it will not throw error, even if called multiple times.
+// $(window).on( 'resize', createSlick );
 
