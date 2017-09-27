@@ -45,7 +45,18 @@ app.controller('common', [ '$scope', '$http', '$location', '$window', function($
                     $scope.setList(resp.data);
 
                     setTimeout(function(){ $('.slider').slick({dots: true}); }, 2000);
-                });
+                }, function() {
+                    $http.post('http://agu.181.rsdemo.ru/api/oauth/token', {
+                        grant_type: 'password',
+                        client_id: 'android',
+                        client_secret: 'SomeRandomCharsAndNumbers',
+                        username: 'myapi',
+                        'password': 'abc1234'
+                    }, {headers: {'Content-Type': 'application/json'}}).then(function (resp) {
+                        localStorage.setItem('token', resp.data.access_token);
+                    });
+
+                } );
                 break;
         }
     };
@@ -78,7 +89,7 @@ app.controller('common', [ '$scope', '$http', '$location', '$window', function($
             $location.search('poem', id);
 
             $scope.openPoem(id);
-
+            $window.location.reload();
             console.log($location.absUrl());
         }
     };
@@ -174,7 +185,7 @@ app.controller('search', [ '$scope', '$http', '$location', function($scope, $htt
         $http.get('http://agu.181.rsdemo.ru/api/articles/' + id, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
             $scope.article = resp.data.article;
             $scope.article.quatrains = resp.data.article.text.split("\n\n");
-            $scope.$apply();
+            // $scope.$apply();
             current_item = 1;
             $('section').hide();
             $('#about').show();
