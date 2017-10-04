@@ -4,28 +4,140 @@
 
 var pageSize = 6;
 
-var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate'/*, 'ngRoute'*/, 'slickCarousel']).filter('nl2br', ['$sce', function($sce){
-    return function(val) {
-        var str =  val.replace(/\n/g, '<br>');
-        return $sce.trustAsHtml(str);
-    };
-}]);
+var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel', 'ngRoute'])
+    .filter('nl2br', ['$sce', function($sce){
+        return function(val) {
+            var str =  val.replace(/\n/g, '<br>');
+            return $sce.trustAsHtml(str);
+        };
+    }])
+    .config(function($routeProvider, $locationProvider) {
+        $routeProvider.otherwise( {  } );
+        $locationProvider.html5Mode({ enabled: true, requireBase: false, rewriteLinks: false });
+    })
+    .run(function($rootScope, $location) {});
 
-
-//     , function(){
-//     return function(text) {
-//         $sce.trustAsHtml(val)
-//         return text ? text.replace(/\n/g, '<br>') : '';
-//     };
-// });
-
-app.controller('common', [ '$scope', '$http', '$location', '$window', function($scope, $http, $location, $window) {
+app.controller('common', [ '$scope', '$http', '$location',  '$window', function($scope, $http, $location, $window) {
     $scope.firstName= "A ";
     $scope.lastName= "G";
     $scope.title = $scope.firstName + ' ' + $scope.lastName;
     $scope.active = '#about';
     $scope.listIndex = [];
     $scope.pageSize = pageSize;
+
+    // for searching
+    $scope.selected = undefined;
+    $scope.states = [];
+    $scope.stems = [];
+console.log('controller');
+
+    $scope.$on( "$routeChangeStart", function(event, next, current) {
+        //     if ($rootScope.loggedInUser == null) {
+        //         // no logged user, redirect to /login
+        //         if ( next.templateUrl === "partials/login.html") {
+        //         } else {
+        //             $location.path("/login");
+        //         }
+        //     }
+
+        switch($location.path()) {
+            case '/poem' :
+                console.log('openPoem');
+                $scope.openPoem($location.search().id);
+                break;
+        }
+        console.log('location:'+$location.absUrl());
+        console.log($location.state());
+    });
+
+    $scope.askApi = function(method, url, parameters, callback) {
+        $http({
+            method: method.toUpperCase(),
+            url: 'http://agu.181.rsdemo.ru'+url,
+            headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
+            data: parameters
+        }).then(callback, function onError(response) {
+            $http.post('http://agu.181.rsdemo.ru/api/oauth/token', {
+                grant_type: 'password',
+                client_id: 'android',
+                client_secret: 'SomeRandomCharsAndNumbers',
+                username: 'myapi',
+                'password': 'abc1234'},
+                { headers: {'Content-Type': 'application/json'}})
+                .then(function (resp) {
+                    localStorage.setItem('token', resp.data.access_token);
+                    $http({
+                        method: toUpper(method),
+                        url: 'http://agu.181.rsdemo.ru'+url,
+                        headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
+                        data: parameters
+                    }).then(callback, function onError(response) { console.log('No auth error');}); },
+                    function(response) { console.log('Still have not token'); }
+            );
+        });
+    }
+
+    var stemmer = new RussianStemmer();
+
+    $scope.openPoem = function(id) {
+        $scope.askApi('get', '/api/articles/' + id, { }, function (resp) {
+            $scope.article = resp.data.article;
+            $scope.article.quatrains = resp.data.article.text.split("\n\n");
+            // $scope.$apply();
+            current_item = 1;
+            $('section').hide();
+            $('#about').show();
+        });
+    }
+
+    $scope.init = function () {
+
+//            var req = {
+//                method: 'POST',
+//                url: 'http://agu.181.rsdemo.ru/api/oauth/token',
+//                headers: {
+//                    'Content-Type': 'application/json'
+//                },
+//                data: {test: 'test'}
+//            };
+//
+//            $http(req).then(function() { alert('success'); }, function(){  });
+        // http POST http://localhost:1337/api/oauth/token
+
+    };
+
+    $scope.onedit = function() {
+        $scope.states = [];
+        $scope.stems = [];
+        if($scope.selected.length>2) {
+            $scope.selected.split(' ').forEach(function (word) {
+                $scope.stems.push(stemmer.stemWord(word));
+            });
+            $http.get('http://agu.181.rsdemo.ru/api/articles/search/'+ $scope.selected, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
+                for (var i = 0; i < resp.data.length; i++) {
+                    $scope.states.push({
+                        'id': resp.data[i]._id,
+                        'title': resp.data[i].title,
+                        'text': resp.data[i].text,
+                        'line': resp.data[i].description});
+                }
+            });
+        }
+    };
+
+    $scope.selectMatch = function($index) {
+        var article = $scope.states[$index];
+
+        $location.search('poem', $scope.states[$index].id);
+        $scope.states = [];
+        if($scope.article != undefined) $('#poem').fadeOut( 300, function() {
+            $('#poem').fadeIn(600);
+            $scope.article = { title: article.title, quatrains: article.text.split("\n\n") };
+            $scope.$apply();
+        });
+        else
+            $scope.article = { title: article.title, quatrains: article.text.split("\n\n") };
+    };
 
     $scope.setList = function(data) {
         $scope.list = data;
@@ -86,11 +198,11 @@ app.controller('common', [ '$scope', '$http', '$location', '$window', function($
     $scope.open = function(id) {
         if(id!=0) {
             // $location.path('http://agu.181.rsdemo.ru/#!?poem='+id);
-            $location.search('poem', id);
+            $location.path('poem');
+            $location.search('id', id);
 
-            $scope.openPoem(id);
-            $window.location.reload();
-            console.log($location.absUrl());
+            // $scope.openPoem(id);
+            // $window.location.reload();
         }
     };
 
@@ -135,110 +247,6 @@ app.controller('common', [ '$scope', '$http', '$location', '$window', function($
 
     $scope.isDefined = function (thing) {
         return !(typeof thing === "undefined");
-    };
-
-    $scope.openPoem = function(id) {
-        $http.get('http://agu.181.rsdemo.ru/api/articles/' + id, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
-            $scope.article = resp.data.article;
-            $scope.article.quatrains = resp.data.article.text.split("\n\n");
-            current_item = 1;
-            $('section').hide();
-            $('#about').show();
-        });
-    }
-}]);
-
-app.controller('search', [ '$scope', '$http', '$location', function($scope, $http, $location) {
-    $scope.selected = undefined;
-    $scope.states = [];
-    $scope.stems = [];
-
-    if(true || localStorage.getItem('token')==undefined) {
-        $http.post('http://agu.181.rsdemo.ru/api/oauth/token', {
-            grant_type: 'password',
-            client_id: 'android',
-            client_secret: 'SomeRandomCharsAndNumbers',
-            username: 'myapi',
-            'password': 'abc1234'
-        }, {headers: {'Content-Type': 'application/json'}}).then(function (resp) {
-            localStorage.setItem('token', resp.data.access_token);
-
-            if($location.search().poem!=undefined) {
-
-                $scope.openPoem($location.search().poem);
-                // $http.get('http://agu.181.rsdemo.ru/api/articles/' + $location.search().poem, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
-                //     $scope.article = resp.data.article;
-                //     $scope.article.quatrains = resp.data.article.text.split("\n\n");
-                //     current_item = 1;
-                //     $('section').hide();
-                //     $('#about').show();
-                // });
-            }
-
-        });
-    }
-
-
-    var stemmer = new RussianStemmer();
-
-    $scope.openPoem = function(id) {
-        $http.get('http://agu.181.rsdemo.ru/api/articles/' + id, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
-            $scope.article = resp.data.article;
-            $scope.article.quatrains = resp.data.article.text.split("\n\n");
-            // $scope.$apply();
-            current_item = 1;
-            $('section').hide();
-            $('#about').show();
-        });
-    }
-
-    $scope.init = function () {
-
-//            var req = {
-//                method: 'POST',
-//                url: 'http://agu.181.rsdemo.ru/api/oauth/token',
-//                headers: {
-//                    'Content-Type': 'application/json'
-//                },
-//                data: {test: 'test'}
-//            };
-//
-//            $http(req).then(function() { alert('success'); }, function(){  });
-        // http POST http://localhost:1337/api/oauth/token
-
-    };
-
-    $scope.onedit = function() {
-        $scope.states = [];
-        $scope.stems = [];
-        if($scope.selected.length>2) {
-            $scope.selected.split(' ').forEach(function (word) {
-                $scope.stems.push(stemmer.stemWord(word));
-            });
-            $http.get('http://agu.181.rsdemo.ru/api/articles/search/'+ $scope.selected, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
-                for (var i = 0; i < resp.data.length; i++) {
-                    $scope.states.push({
-                        'id': resp.data[i]._id,
-                        'title': resp.data[i].title,
-                        'text': resp.data[i].text,
-                        'line': resp.data[i].description});
-                }
-            });
-        }
-    };
-
-    $scope.selectMatch = function($index) {
-        var article = $scope.states[$index];
-
-        $location.search('poem', $scope.states[$index].id);
-        $scope.states = [];
-        if($scope.article != undefined) $('#poem').fadeOut( 300, function() {
-            $('#poem').fadeIn(600);
-            $scope.article = { title: article.title, quatrains: article.text.split("\n\n") };
-            $scope.$apply();
-        });
-        else
-            $scope.article = { title: article.title, quatrains: article.text.split("\n\n") };
     };
 
 }]);

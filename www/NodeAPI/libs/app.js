@@ -24,7 +24,7 @@ app.use(cookieParser());
 app.use(methodOverride());
 app.use(passport.initialize());
 
-app.use('/', api);
+// app.use('/', api);
 app.use('/api', api);
 app.use('/api/users', users);
 app.use('/api/articles', articles);
