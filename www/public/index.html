@@ -51,7 +51,7 @@
 	<link rel="stylesheet" href="assets/css/magister.css">
 
 	<!-- Fonts -->
-	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 	<link href='http://fonts.googleapis.com/css?family=Wire+One' rel='stylesheet' type='text/css'>
 	<link href="https://fonts.googleapis.com/css?family=Lato|Oswald:200,300,400,500,600,700|Yanone+Kaffeesatz" rel="stylesheet">
 
@@ -80,6 +80,8 @@
         <link rel="stylesheet" href="modules/slick-carousel/slick/slick-theme.css">
 <!--        <script src="modules/jquery/jquery.js"></script>
         <script src="modules/angular/angular.js"></script> -->
+	<!--<link rel="stylesheet" type="text/css" href="http://720kb.github.io/csshelper/assets/ext/src/helper.css">-->
+	<script src="modules/angular-socialshare/dist/angular-socialshare.min.js"></script>
 </head>
 
 <!-- use "theme-invert" class on bright backgrounds, also try "text-shadows" class -->
@@ -91,7 +93,7 @@
 			<button type="button" class="navbar-toggle" data-toggle="dropdown"><span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
 			<!-- <a data-toggle="dropdown" href="#">Dropdown trigger</a> -->
 			<ul class="dropdown-menu nav-collapse" role="menu" aria-labelledby="dLabel">
-				<li><a href="#head">А.Гуськов</a></li>
+				<li><a href="#head" ng-click="selectMenu('#head')">А.Гуськов</a></li>
 				<li><a href="#about">Поиск</a></li>
 				<li><a href="#all" ng-click="selectMenu('#all')">Все стихи</a></li>
 				<li><a href="#themes">Фото</a></li>
@@ -101,7 +103,7 @@
 	</div>
 </nav>
 
-<!-- Second (About) section -->
+<!-- Poem -->
 <section class="section" id="about">
 	<div class="container">
 		<div class="row">
@@ -141,9 +143,43 @@
 					<!--</div>-->
 
 				</div>
+				<div class="row sharebuttons text-center">
+					<br>
+					<h5><strong>Поделиться:<br><br></strong></h5>
+					<a href="#" class="btn btn-default fa fa-facebook" socialshare socialshare-provider="facebook" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}"> Facebook</a>
+
+					<a href="#" class="btn btn-default fa fa-twitter" socialshare socialshare-provider="twitter" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}"> Twitter</a>
+
+					<a href="#" class="btn btn-default fa fa-google-plus" socialshare socialshare-provider="google" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}"> Google</a>
+
+					<a href="#" class="btn btn-default fa fa-vk" socialshare socialshare-provider="vk" socialshare-text="{{article.title}}"
+					   socialshare-description="{{article.title}}, {{author.name}}" socialshare-url="{{location.absUrl()}}"> Vk</a>
+
+					<a href="#" class="btn btn-default fa fa-odnoklassniki" socialshare socialshare-provider="ok" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}"> Ok</a>
+<!--
+					<a href="#" class="btn btn-default fa fa-evernote" socialshare socialshare-provider="evernote" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}">Evernote</a>
+-->
+					<a href="#" class="btn btn-default fa fa-telegram" socialshare socialshare-provider="telegram" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}">
+						<!--<img width="15" valign="middle" style="margin-top:-3px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAABegAAAXoBMrnI/AAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAJTSURBVFiFxddNiE5RGAfw33nzUTMWJjaiYVhZTBaSjQWTkhSaNFESKbGwsJFSlpKsZKEkC8XCwkchbCyE8Y4IKx9JrESSyOcci3tfc99P974vM6eeuufc5/n//+fjPue5IcZoIltpQtkxabwJQwhd2ICteCXGOC6GJTiOj4ipvf6vKxBCmIHN2I7+Bi4j/1xACKGElSnpekxp4V7+ZwJCCPOwTbK3vTnDyp3u61RsxA2MGtvbrH1tMh7R0y7xIhzF+xbgoziJLU3eP4sxKkI6Hbsw0oK0Yo+xDEP43sTnzF8FIGAFTuNLDuLP2CvJLzvwq4XvnqYCMBv78TwHacUuojeN35fDf1mVAEzGIC7jZwHiV1iXwTmcI+Ynuir3UB+O4G0B0ogfKVl3ClTCiZyxjzKCPSxIHHEL/RmQKThXIP5kVsAaDOcMfC/JcCED0I3rBSew8098BmghDuFNk6AzmFlzWHtwp40VXFwnIANawqqUsPLpPcjOOvWbJfnei5J/xeSmAhokn4+4WTM+Hy/aII8YrsLKkQHP4pux096N122SRxzL4ucpyS5KTvlA2t+NOTnimrVytpNHwBVJPl+d9pd3QF4nIO9FdA0v0+dn2l/+TygV3QK4gHkhhKWY28Hs78cYR7MDeQVckszgtuTOqLQPkgpoLZ7mwCnXjRSoB+6pXs4nWFCTEU9pvQVDdbgFBOzPAJ3HtCZ+m1SX3lnr60RAbzrrA2qyYgPfPtytIX/X0DevgKImqYoOGquKro6rgIyQAcltO9jofUidJqxN+N/xb2q+aE/BzD5NAAAAAElFTkSuQmCC">--> Telegram</a>
+
+					<a href="#" class="btn btn-default fa fa-skype" socialshare socialshare-provider="skype" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}"> Skype</a>
+
+					<a href="#" class="btn btn-default fa fa-whatsapp bg-white" socialshare socialshare-provider="whatsapp" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}">
+						 Whatsapp</a>
+
+					<a href="#" class="btn btn-default fa fa-facebook-square" socialshare socialshare-provider="facebook-messenger" socialshare-text="{{article.title}}"
+					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}"> Facebook Messenger</a>
+				</div>
 			</div>
 		</div>
-
 
 
 	</div>

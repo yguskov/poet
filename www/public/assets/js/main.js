@@ -2,9 +2,16 @@
  * Created by yguskov on 22.06.17.
  */
 
+// global. currently active menu item
+var current_item = 0;
+
+// few settings
+var section_hide_time = 600;
+var section_show_time = 600;
+
 var pageSize = 6;
 
-var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel', 'ngRoute'])
+var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel', 'ngRoute', '720kb.socialshare'])
     .filter('nl2br', ['$sce', function($sce){
         return function(val) {
             var str =  val.replace(/\n/g, '<br>');
@@ -15,7 +22,7 @@ var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel',
         $routeProvider.otherwise( {  } );
         $locationProvider.html5Mode({ enabled: true, requireBase: false, rewriteLinks: false });
     })
-    .run(function($rootScope, $location) {});
+    .run(function($rootScope, $location) { $rootScope.location = $location; $rootScope.author = { name: 'Анатолий Гуськов'} });
 
 app.controller('common', [ '$scope', '$http', '$location',  '$window', function($scope, $http, $location, $window) {
     $scope.firstName= "A ";
@@ -29,7 +36,6 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
     $scope.selected = undefined;
     $scope.states = [];
     $scope.stems = [];
-console.log('controller');
 
     $scope.$on( "$routeChangeStart", function(event, next, current) {
         //     if ($rootScope.loggedInUser == null) {
@@ -41,41 +47,18 @@ console.log('controller');
         //     }
 
         switch($location.path()) {
+            case '/' :
+                $scope.showSection('#head');
+                break;
             case '/poem' :
-                console.log('openPoem');
                 $scope.openPoem($location.search().id);
                 break;
+            case '/all' :
+                $scope.listAll();
+                $scope.showSection('#all');
+                break;
         }
-        console.log('location:'+$location.absUrl());
-        console.log($location.state());
     });
-
-    $scope.askApi = function(method, url, parameters, callback) {
-        $http({
-            method: method.toUpperCase(),
-            url: 'http://agu.181.rsdemo.ru'+url,
-            headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
-            data: parameters
-        }).then(callback, function onError(response) {
-            $http.post('http://agu.181.rsdemo.ru/api/oauth/token', {
-                grant_type: 'password',
-                client_id: 'android',
-                client_secret: 'SomeRandomCharsAndNumbers',
-                username: 'myapi',
-                'password': 'abc1234'},
-                { headers: {'Content-Type': 'application/json'}})
-                .then(function (resp) {
-                    localStorage.setItem('token', resp.data.access_token);
-                    $http({
-                        method: toUpper(method),
-                        url: 'http://agu.181.rsdemo.ru'+url,
-                        headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
-                        data: parameters
-                    }).then(callback, function onError(response) { console.log('No auth error');}); },
-                    function(response) { console.log('Still have not token'); }
-            );
-        });
-    }
 
     var stemmer = new RussianStemmer();
 
@@ -87,6 +70,14 @@ console.log('controller');
             current_item = 1;
             $('section').hide();
             $('#about').show();
+        });
+    }
+
+    $scope.listAll = function() {
+        if($scope.list==undefined) $scope.askApi('get', '/api/articles/', {}, function(resp) {
+            $scope.setList(resp.data);
+
+            setTimeout(function(){ $('.slider').slick({dots: true}); }, 2000);
         });
     }
 
@@ -149,29 +140,39 @@ console.log('controller');
 
     $scope.selectMenu = function(id) {
         switch (id) {
+            case '#head' :
+                $location.path('/');
+                break;
+
             case '#about' :
                 break;
 
             case '#all' :
-                $http.get('http://agu.181.rsdemo.ru/api/articles/', { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
-                    $scope.setList(resp.data);
-
-                    setTimeout(function(){ $('.slider').slick({dots: true}); }, 2000);
-                }, function() {
-                    $http.post('http://agu.181.rsdemo.ru/api/oauth/token', {
-                        grant_type: 'password',
-                        client_id: 'android',
-                        client_secret: 'SomeRandomCharsAndNumbers',
-                        username: 'myapi',
-                        'password': 'abc1234'
-                    }, {headers: {'Content-Type': 'application/json'}}).then(function (resp) {
-                        localStorage.setItem('token', resp.data.access_token);
-                    });
-
-                } );
+                $location.path('/all');
                 break;
         }
+
+        // $('.navbar-toggle').click();
+        // $scope.showSection(id);
+        // if( ! $(this).hasClass('active') ) {
+        //     current_item = this;
+        //     // close all visible divs with the class of .section
+        // }
     };
+
+    $scope.showSection = function(section) {
+        if($('.section:visible').length==0) {
+            $('a[href="' + section + '"]').addClass('active');
+            $(section).fadeIn(section_show_time);
+        }
+        else {
+            $('.section:visible').fadeOut(section_hide_time, function () {
+                $('a', '.mainmenu').removeClass('active');
+                $('a[href="' + section + '"]').addClass('active');
+                $(section).fadeIn(section_show_time);
+            });
+        }
+    }
 
     $scope.isPageHide = function(offset) {
         if(offset>=$scope.pageSize) return 'hide';
@@ -249,6 +250,40 @@ console.log('controller');
         return !(typeof thing === "undefined");
     };
 
+    /**
+     * Request to api
+     * @param method
+     * @param url
+     * @param parameters
+     * @param callback
+     */
+    $scope.askApi = function(method, url, parameters, callback) {
+        $http({
+            method: method.toUpperCase(),
+            url: 'http://agu.181.rsdemo.ru'+url,
+            headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
+            data: parameters
+        }).then(callback, function onError(response) {
+            $http.post('http://agu.181.rsdemo.ru/api/oauth/token', {
+                    grant_type: 'password',
+                    client_id: 'android',
+                    client_secret: 'SomeRandomCharsAndNumbers',
+                    username: 'myapi',
+                    'password': 'abc1234'},
+                { headers: {'Content-Type': 'application/json'}})
+                .then(function (resp) {
+                        localStorage.setItem('token', resp.data.access_token);
+                        $http({
+                            method: toUpper(method),
+                            url: 'http://agu.181.rsdemo.ru'+url,
+                            headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
+                            data: parameters
+                        }).then(callback, function onError(response) { console.log('No auth error');}); },
+                    function(response) { console.log('Still have not token'); }
+                );
+        });
+    }
+
 }]);
 
 /**
@@ -307,6 +342,7 @@ app.controller('ModalDemoCtrl', function ($uibModal, $log, $document) {
     $ctrl.toggleAnimation = function () {
         $ctrl.animationsEnabled = !$ctrl.animationsEnabled;
     };
+
 });
 
 // Please note that $uibModalInstance represents a modal window (instance) dependency.

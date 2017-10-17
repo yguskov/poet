@@ -119,12 +119,6 @@ body {
 	.section { padding-top:40px;}
 }
 
-/* Show one of sections */
-#head { 
-	display: block;
-}
-
-
 /********************************************************/
 /*                      Typography                      */
 /********************************************************/
@@ -382,3 +376,9 @@ a:hover, a:active { color:#fff; text-decoration: underline; }
 	font-size: 1.5em;
 	height: 2em;
 }
+
+.bg-white {
+	background-color: #fff;
+}
+
+.sharebuttons .fa { margin-bottom: 9px }
