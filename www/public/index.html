@@ -3,10 +3,20 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport"    content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="">
-	<meta name="author"      content="Yury Guskov">
+	<meta name="author"      content="Юрий Гуськов">
 
-	<title>{{title}}</title>
+	<!-- Minimum Social Media Tag Template: Article -->
+	<title>{{seo.title}}</title>
+	<meta name="description" content="{{seo.description}}" />
+	<!-- Twitter Card data -->
+	<meta name="twitter:card" value="summary">
+	<!-- Open Graph data -->
+	<meta property="og:title" content="{{seo.title}}" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="{{location.absUrl()}}" />
+	<meta property="og:image" content="http://agu.181.rsdemo.ru/assets/images/body4.jpg" />
+	<meta property="og:description" content="{{seo.description}}" />
+	<meta property="og:site_name" content="A.A.Guskov" />
 
 	<!-- Bootstrap itself -->
 	<link href="http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet" type="text/css">
@@ -132,9 +142,14 @@
 
 				<div class="row">
 
-					<div ng-repeat="quatrain in article.quatrains track by $index" class="ng-scope col-sm-6">
-						<p ng-bind-html="quatrain | nl2br"></p>
+					<div  class="col-xs-12 col-sm-6">
+						<p ng-repeat="quatrain in firstHalf(article.quatrains) track by $index"   ng-bind-html="quatrain | nl2br"></p>
 					</div>
+
+					<div  class="col-xs-12 col-sm-6">
+						<p ng-repeat="quatrain in lastHalf(article.quatrains) track by $index" class="ng-scope"  ng-bind-html="quatrain | nl2br"></p>
+					</div>
+
 
 					<!--<div class="col-sm-6">-->
 						<!--<p>Tempore, eos, voluptatem minus commodi<br> error aut eaque neque consequuntur optio<br> nesciunt quod quibusdam.<br> Ipsum, voluptatibus, totam, modi perspiciatis repudiandae odio ad possimus molestias culpa optio eaque itaque dicta quod cupiditate reiciendis illo illum aspernatur ducimus praesentium quae porro alias repellat quasi cum fugiat accusamus molestiae exercitationem amet fugit sint eligendi omnis adipisci corrupti. Aspernatur.</p>-->

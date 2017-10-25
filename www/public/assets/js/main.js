@@ -22,15 +22,15 @@ var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel',
         $routeProvider.otherwise( {  } );
         $locationProvider.html5Mode({ enabled: true, requireBase: false, rewriteLinks: false });
     })
-    .run(function($rootScope, $location) { $rootScope.location = $location; $rootScope.author = { name: 'Анатолий Гуськов'} });
+    .run(function($rootScope, $location) { $rootScope.location = $location; $rootScope.author = { name: 'Анатолий Гуськов'}; $rootScope.baseUrl = 'http://agu.181.rsdemo.ru'; });
 
 app.controller('common', [ '$scope', '$http', '$location',  '$window', function($scope, $http, $location, $window) {
-    $scope.firstName= "A ";
-    $scope.lastName= "G";
-    $scope.title = $scope.firstName + ' ' + $scope.lastName;
+    $scope.seo = { title: 'Aнатолий Гуськов - стихи', description: 'Aнатолий Алексеевич Гуськов - стихи' };
+
     $scope.active = '#about';
     $scope.listIndex = [];
     $scope.pageSize = pageSize;
+
 
     // for searching
     $scope.selected = undefined;
@@ -49,6 +49,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         switch($location.path()) {
             case '/' :
                 $scope.showSection('#head');
+                $scope.seo = { title: 'Aнатолий Гуськов - стихи', description: 'Aнатолий Алексеевич Гуськов - стихи' };
                 break;
             case '/poem' :
                 $scope.openPoem($location.search().id);
@@ -56,6 +57,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
             case '/all' :
                 $scope.listAll();
                 $scope.showSection('#all');
+                $scope.seo = { title: 'Aнатолий Гуськов - все стихи', description: 'Aнатолий Алексеевич Гуськов - все стихи' };
                 break;
         }
     });
@@ -66,6 +68,8 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         $scope.askApi('get', '/api/articles/' + id, { }, function (resp) {
             $scope.article = resp.data.article;
             $scope.article.quatrains = resp.data.article.text.split("\n\n");
+            $scope.seo = { title: resp.data.article.title, description: resp.data.article.description };
+            // resp.data.article.title.charAt(0).toUpperCase() + resp.data.article.title.toLowerCase().slice(1)
             // $scope.$apply();
             current_item = 1;
             $('section').hide();
@@ -260,11 +264,11 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
     $scope.askApi = function(method, url, parameters, callback) {
         $http({
             method: method.toUpperCase(),
-            url: 'http://agu.181.rsdemo.ru'+url,
+            url: $scope.baseUrl+url,
             headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
             data: parameters
         }).then(callback, function onError(response) {
-            $http.post('http://agu.181.rsdemo.ru/api/oauth/token', {
+            $http.post($scope.baseUrl+'/api/oauth/token', {
                     grant_type: 'password',
                     client_id: 'android',
                     client_secret: 'SomeRandomCharsAndNumbers',
@@ -274,8 +278,8 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
                 .then(function (resp) {
                         localStorage.setItem('token', resp.data.access_token);
                         $http({
-                            method: toUpper(method),
-                            url: 'http://agu.181.rsdemo.ru'+url,
+                            method: method.toUpperCase(),
+                            url: $scope.baseUrl+url,
                             headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
                             data: parameters
                         }).then(callback, function onError(response) { console.log('No auth error');}); },
@@ -284,6 +288,18 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         });
     }
 
+    $scope.firstHalf = function(items) {
+        if(typeof items !== 'undefined') {
+            return items.slice(0, Math.ceil(items.length / 2));
+        }
+        else return [];
+    }
+
+    $scope.lastHalf = function(items) {
+        if(typeof items !== 'undefined') {
+            return items.slice(Math.ceil(items.length / 2), items.length);
+        }
+    }
 }]);
 
 /**
