@@ -104,7 +104,7 @@
 			<!-- <a data-toggle="dropdown" href="#">Dropdown trigger</a> -->
 			<ul class="dropdown-menu nav-collapse" role="menu" aria-labelledby="dLabel">
 				<li><a href="#head" ng-click="selectMenu('#head')">А.Гуськов</a></li>
-				<li><a href="#about">Поиск</a></li>
+				<li><a href="#search" ng-click="selectMenu('#search')">Поиск</a></li>
 				<li><a href="#all" ng-click="selectMenu('#all')">Все стихи</a></li>
 				<li><a href="#themes">Фото</a></li>
 				<li><a href="#contact">Ссылки</a></li>
@@ -113,8 +113,8 @@
 	</div>
 </nav>
 
-<!-- Poem -->
-<section class="section" id="about">
+<!-- Search -->
+<section class="section" id="search">
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-8  col-sm-offset-2">
@@ -135,6 +135,12 @@
 			</div>
 		</div>
 
+	</div>
+</section>
+
+<!-- Poem -->
+<section class="section" id="about">
+	<div class="container">
 		<div class="row">
 			<div id="poem" class="col-sm-8 col-sm-offset-2 fading" ng-show="isDefined(article)">
 				<pre ng-show="false">{{article}}</pre>
@@ -225,7 +231,7 @@
 				</div>
 
 				<!-- Nice place to describe your site in a sentence or two -->
-				<p><a href="/download/" class="btn btn-default btn-lg">Download template now</a></p>
+				<p><a href="/all" class="btn btn-default btn-lg">Все стихи</a></p>
 
 			</div> <!-- /col -->
 		</div> <!-- /row -->

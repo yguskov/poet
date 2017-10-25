@@ -51,6 +51,9 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
                 $scope.showSection('#head');
                 $scope.seo = { title: 'Aнатолий Гуськов - стихи', description: 'Aнатолий Алексеевич Гуськов - стихи' };
                 break;
+            case '/search' :
+                $scope.showSection('#search');
+                break;
             case '/poem' :
                 $scope.openPoem($location.search().id);
                 break;
@@ -72,8 +75,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
             // resp.data.article.title.charAt(0).toUpperCase() + resp.data.article.title.toLowerCase().slice(1)
             // $scope.$apply();
             current_item = 1;
-            $('section').hide();
-            $('#about').show();
+            $scope.showSection('#about');
         });
     }
 
@@ -121,17 +123,10 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
     };
 
     $scope.selectMatch = function($index) {
-        var article = $scope.states[$index];
-
-        $location.search('poem', $scope.states[$index].id);
+        $scope.open($scope.states[$index].id);
+        $scope.selected = undefined;
         $scope.states = [];
-        if($scope.article != undefined) $('#poem').fadeOut( 300, function() {
-            $('#poem').fadeIn(600);
-            $scope.article = { title: article.title, quatrains: article.text.split("\n\n") };
-            $scope.$apply();
-        });
-        else
-            $scope.article = { title: article.title, quatrains: article.text.split("\n\n") };
+        $scope.stems = [];
     };
 
     $scope.setList = function(data) {
@@ -146,6 +141,10 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         switch (id) {
             case '#head' :
                 $location.path('/');
+                break;
+
+            case '#search' :
+                $location.path('/search');
                 break;
 
             case '#about' :
