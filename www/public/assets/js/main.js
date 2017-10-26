@@ -210,7 +210,6 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         }
     };
 
-
     $scope.cancel = function(id) {
             $scope.model = undefined;
             $('#edit').fadeOut( 300, function() {
@@ -249,6 +248,30 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         // });
     };
 
+    $scope.login = function() {
+        if ($scope.user.username !== '' && $scope.user.password !== '') {
+            $http.post($scope.baseUrl+'/api/oauth/token', {
+                    grant_type: 'password',
+                    client_id: 'android',
+                    client_secret: 'SomeRandomCharsAndNumbers',
+                    username: $scope.user.username,
+                    'password': $scope.user.password},
+                { headers: {'Content-Type': 'application/json'}})
+                .then(function(resp) {
+                    localStorage.setItem('username', $scope.user.username);
+                    localStorage.setItem('token', resp.data.access_token);
+                    $window.location.href = '/'
+                    }, function() { console.log('Auth error');
+                });
+        }
+    }
+
+    $scope.logout = function() {
+        localStorage.removeItem('username');
+        localStorage.removeItem('token');
+        $window.location.href = '/'
+    }
+
     $scope.isDefined = function (thing) {
         return !(typeof thing === "undefined");
     };
@@ -267,24 +290,66 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
             headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
             data: parameters
         }).then(callback, function onError(response) {
-            $http.post($scope.baseUrl+'/api/oauth/token', {
-                    grant_type: 'password',
-                    client_id: 'android',
-                    client_secret: 'SomeRandomCharsAndNumbers',
-                    username: 'myapi',
-                    'password': 'abc1234'},
-                { headers: {'Content-Type': 'application/json'}})
-                .then(function (resp) {
-                        localStorage.setItem('token', resp.data.access_token);
-                        $http({
-                            method: method.toUpperCase(),
-                            url: $scope.baseUrl+url,
-                            headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
-                            data: parameters
-                        }).then(callback, function onError(response) { console.log('No auth error');}); },
-                    function(response) { console.log('Still have not token'); }
-                );
+            $scope.authApi(method, url, parameters, callback);
         });
+    }
+
+    $scope.authApi = function(method, url, parameters, callback) {
+        var username = 'myapi';
+        var password = 'abc1234';
+        if(localStorage.getItem('username')) {
+            username = localStorage.getItem('username');
+            // ask auth
+            password = prompt('Пароль?','');
+        }
+        $http.post($scope.baseUrl+'/api/oauth/token', {
+                grant_type: 'password',
+                client_id: 'android',
+                client_secret: 'SomeRandomCharsAndNumbers',
+                username: username,
+                'password': password},
+            { headers: {'Content-Type': 'application/json'}})
+            .then(
+                function (resp) {
+                    localStorage.setItem('token', resp.data.access_token);
+                    $http({
+                        method: method.toUpperCase(),
+                        url: $scope.baseUrl+url,
+                        headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
+                        data: parameters
+                    }).then(callback, function onError(response) { console.log('No auth error');}); },
+                function(response) {
+                    if(confirm('Зайти обычным пользователем')) {
+                        var username = 'myapi';
+                        var password = 'abc1234';
+                        $http.post($scope.baseUrl + '/api/oauth/token', {
+                                grant_type: 'password',
+                                client_id: 'android',
+                                client_secret: 'SomeRandomCharsAndNumbers',
+                                username: username,
+                                'password': password
+                            },
+                            {headers: {'Content-Type': 'application/json'}})
+                            .then(
+                                function (resp) {
+                                    localStorage.setItem('token', resp.data.access_token);
+                                    $http({
+                                        method: method.toUpperCase(),
+                                        url: $scope.baseUrl + url,
+                                        headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
+                                        data: parameters
+                                    }).then(callback, function onError(response) {
+                                        console.log('No auth error');
+                                    });
+                                },
+                                function (response) {
+                                    console.log('Still have not token');
+                                });
+                    }
+                    else {
+                        console.log('Still have not own token');
+                    }
+                });
     }
 
     $scope.firstHalf = function(items) {

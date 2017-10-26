@@ -4,7 +4,7 @@ var router = express.Router();
 
 var libs = process.cwd() + '/libs/';
 var log = require(libs + 'log')(module);
-
+var config = require(libs + 'config');
 var db = require(libs + 'db/mongoose');
 var Article = require(libs + 'model/article');
 
@@ -45,6 +45,18 @@ router.get('/search/:phase', passport.authenticate('bearer', { session: false })
 
 router.post('/', passport.authenticate('bearer', { session: false }), function(req, res) {
 
+	// only for admin
+    if(req.user.username!=config.get("default:admin:username")) {
+        log.error('Adding poem forbidden for guest user');
+
+        res.statusCode = 403;
+        res.json({
+            error: 'Access error'
+        });
+        return;
+	}
+
+	// save article
     var quatrains = req.body.text.split("\n\n");
 
 	var article = new Article({
@@ -82,9 +94,9 @@ router.post('/', passport.authenticate('bearer', { session: false }), function(r
 });
 
 router.get('/:id', passport.authenticate('bearer', { session: false }), function(req, res) {
-	
+
 	Article.findById(req.params.id, function (err, article) {
-		
+
 		if(!article) {
 			res.statusCode = 404;
 			
@@ -118,8 +130,18 @@ router.get('/:id', passport.authenticate('bearer', { session: false }), function
 });
 
 router.put('/:id', passport.authenticate('bearer', { session: false }), function (req, res){
-	var articleId = req.params.id;
+    // only for admin
+    if(req.user.username!=config.get("default:admin:username")) {
+        log.error('Saving poem forbidden for guest user');
 
+        res.statusCode = 403;
+        res.json({
+            error: 'Access error'
+        });
+        return;
+    }
+    // find and save
+	var articleId = req.params.id;
 	Article.findById(articleId, function (err, article) {
 		if(!article) {
 			res.statusCode = 404;
