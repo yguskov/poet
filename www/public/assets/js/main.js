@@ -184,7 +184,8 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
 
     $scope.edit = function(id) {
         if(id!=0) {
-            $http.get('http://agu.181.rsdemo.ru/api/articles/' + id, {headers: {Authorization: 'Bearer ' + localStorage.getItem('token')}}).then(function (resp) {
+            $scope.askApi('get', '/api/articles/'+id, {}, function (resp) {
+                console.log('open edit poem');
                 $scope.model = resp.data.article;
                 $('#all').fadeOut(300, function () {
                     $('#edit').fadeIn(600);
@@ -270,6 +271,10 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         localStorage.removeItem('username');
         localStorage.removeItem('token');
         $window.location.href = '/'
+    }
+
+    $scope.isAdmin = function() {
+        return !(typeof localStorage.getItem('username') === 'object');
     }
 
     $scope.isDefined = function (thing) {
