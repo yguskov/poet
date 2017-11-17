@@ -18,13 +18,21 @@ var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel',
             return $sce.trustAsHtml(str);
         };
     }])
+    .config( [
+        '$compileProvider',
+        function( $compileProvider )
+        {
+            $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension|whatsapp):/);
+            // Angular before v1.2 uses $compileProvider.urlSanitizationWhitelist(...)
+        }
+    ])
     .config(function($routeProvider, $locationProvider) {
         $routeProvider.otherwise( {  } );
         $locationProvider.html5Mode({ enabled: true, requireBase: false, rewriteLinks: false });
     })
-    .run(function($rootScope, $location) { $rootScope.location = $location; $rootScope.author = { name: 'Анатолий Гуськов'}; $rootScope.baseUrl = 'http://agu.181.rsdemo.ru'; });
+    .run(function($rootScope, $location) { $rootScope.location = $location; $rootScope.author = { name: 'Анатолий Гуськов'}; $rootScope.baseUrl = 'http://gus.181.rsdemo.ru'; });
 
-app.controller('common', [ '$scope', '$http', '$location',  '$window', function($scope, $http, $location, $window) {
+app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', function($scope, $http, $location, $window, $sce) {
     $scope.seo = { title: 'Aнатолий Гуськов - стихи', description: 'Aнатолий Алексеевич Гуськов - стихи' };
 
     $scope.active = '#about';
@@ -49,7 +57,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         switch($location.path()) {
             case '/' :
                 $scope.showSection('#head');
-                $scope.seo = { title: 'Aнатолий Гуськов - стихи', description: 'Aнатолий Алексеевич Гуськов - стихи' };
+                $scope.seo = { title: 'стихи', description: 'Aнатолий Алексеевич Гуськов - стихи' };
                 break;
             case '/search' :
                 $scope.showSection('#search');
@@ -60,7 +68,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
             case '/all' :
                 $scope.listAll();
                 $scope.showSection('#all');
-                $scope.seo = { title: 'Aнатолий Гуськов - все стихи', description: 'Aнатолий Алексеевич Гуськов - все стихи' };
+                $scope.seo = { title: 'все стихи', description: 'Aнатолий Алексеевич Гуськов - все стихи' };
                 break;
         }
     });
@@ -91,7 +99,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
 
 //            var req = {
 //                method: 'POST',
-//                url: 'http://agu.181.rsdemo.ru/api/oauth/token',
+//                url: 'http://gus.181.rsdemo.ru/api/oauth/token',
 //                headers: {
 //                    'Content-Type': 'application/json'
 //                },
@@ -110,7 +118,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
             $scope.selected.split(' ').forEach(function (word) {
                 $scope.stems.push(stemmer.stemWord(word));
             });
-            $http.get('http://agu.181.rsdemo.ru/api/articles/search/'+ $scope.selected, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
+            $http.get('http://gus.181.rsdemo.ru/api/articles/search/'+ $scope.selected, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
                 for (var i = 0; i < resp.data.length; i++) {
                     $scope.states.push({
                         'id': resp.data[i]._id,
@@ -202,7 +210,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
 
     $scope.open = function(id) {
         if(id!=0) {
-            // $location.path('http://agu.181.rsdemo.ru/#!?poem='+id);
+            // $location.path('http://gus.181.rsdemo.ru/#!?poem='+id);
             $location.path('poem');
             $location.search('id', id);
 
@@ -220,7 +228,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
 
     $scope.save = function() {
         if($scope.model._id==undefined) {
-            $http.post('http://agu.181.rsdemo.ru/api/articles', $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
+            $http.post('http://gus.181.rsdemo.ru/api/articles', $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
                 .then(function (resp) {
                     $scope.list.push(resp.data.article);
                     $('#edit').fadeOut(300, function () {
@@ -229,7 +237,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
                 });
         }
         else {
-            $http.put('http://agu.181.rsdemo.ru/api/articles/' + $scope.model._id, $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
+            $http.put('http://gus.181.rsdemo.ru/api/articles/' + $scope.model._id, $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
                 .then(function (resp) {
                     var i = $scope.list.findIndex(function(item) { return item._id==resp.data.article._id });
                     $scope.list[i] = resp.data.article;
@@ -241,7 +249,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', function(
         }
 
         //
-        // $http.put('http://agu.181.rsdemo.ru/api/articles/'+id, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
+        // $http.put('http://gus.181.rsdemo.ru/api/articles/'+id, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
         //     $scope.model = resp.data.article;
         //     $('#all').fadeOut( 300, function() {
         //         $('#edit').fadeIn(600);

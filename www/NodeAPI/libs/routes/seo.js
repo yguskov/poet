@@ -22,8 +22,8 @@ router.get('/', function(req, res) {
                 // Open Graph data
                 '<meta property="og:title" content="Aнатолий Гуськов - стихи" />' +
                 '<meta property="og:type" content="website" />' +
-                '<meta property="og:url" content="http://agu.181.rsdemo.ru" />' +
-                '<meta property="og:image" content="http://agu.181.rsdemo.ru/assets/images/body4.jpg" />' +
+                '<meta property="og:url" content="http://gus.181.rsdemo.ru" />' +
+                '<meta property="og:image" content="http://gus.181.rsdemo.ru/assets/images/body4.jpg" />' +
                 '<meta property="og:description" content="Aнатолий Алексеевич Гуськов - стихи" />' +
                 '<meta property="og:site_name" content="A.A.Guskov" />' +
                 '</head>'
@@ -65,8 +65,8 @@ router.get('/poem', function(req, res) {
                 // Open Graph data
             	'<meta property="og:title" content="'+article.title+'" />' +
                 '<meta property="og:type" content="website" />' +
-                '<meta property="og:url" content="http://agu.181.rsdemo.ru/poem?id='+article.id+'" />' +
-                '<meta property="og:image" content="http://agu.181.rsdemo.ru/assets/images/body4.jpg" />' +
+                '<meta property="og:url" content="http://gus.181.rsdemo.ru/poem?id='+article.id+'" />' +
+                '<meta property="og:image" content="http://gus.181.rsdemo.ru/assets/images/body4.jpg" />' +
                 '<meta property="og:description" content="'+article.description+'" />' +
                 '<meta property="og:site_name" content="A.A.Guskov" />' +
 				'</head>'

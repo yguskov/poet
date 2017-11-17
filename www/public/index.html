@@ -6,7 +6,7 @@
 	<meta name="author"      content="Юрий Гуськов">
 
 	<!-- Minimum Social Media Tag Template: Article -->
-	<title>{{seo.title}}</title>
+	<title>А.Гуськов {{seo.title}}</title>
 	<meta name="description" content="{{seo.description}}" />
 	<!-- Twitter Card data -->
 	<meta name="twitter:card" value="summary">
@@ -14,7 +14,7 @@
 	<meta property="og:title" content="{{seo.title}}" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="{{location.absUrl()}}" />
-	<meta property="og:image" content="http://agu.181.rsdemo.ru/assets/images/body4.jpg" />
+	<meta property="og:image" content="http://gus.181.rsdemo.ru/assets/images/body4.jpg" />
 	<meta property="og:description" content="{{seo.description}}" />
 	<meta property="og:site_name" content="A.A.Guskov" />
 
@@ -192,7 +192,7 @@
 					<a href="#" class="btn btn-default fa fa-skype" socialshare socialshare-provider="skype" socialshare-text="{{article.title}}"
 					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}"> Skype</a>
 
-					<a href="#" class="btn btn-default fa fa-whatsapp bg-white" socialshare socialshare-provider="whatsapp" socialshare-text="{{article.title}}"
+					<a href="whatsapp://send?text={{location.absUrl()}}" class="btn btn-default fa fa-whatsapp bg-white" socialshare socialshare-provider="whatsapp" socialshare-text="{{article.title}}"
 					   socialshare-hashtags="{{author.name}}, {{article.title}}, стихи" socialshare-url="{{location.absUrl()}}">
 						 Whatsapp</a>
 
