@@ -9,7 +9,7 @@ var db = require(libs + 'db/mongoose');
 var Article = require(libs + 'model/article');
 var ogs = require('open-graph-scraper');
 
-const options = {'baseUrl': 'http://gus.181.rsdemo.ru', 'poster' : '/assets/images/body4.jpg'};
+const options = {'baseUrl': 'http://gus.181.rsdemo.ru', 'poster' : '/assets/images/aguskov.jpg', 'author':'А.Гуськов'};
 
 router.get('/', function(req, res) {
 	return res.send('<head>' +
@@ -20,7 +20,7 @@ router.get('/', function(req, res) {
 		'<meta property="og:title" content="Aнатолий Гуськов - стихи" />' +
 		'<meta property="og:type" content="website" />' +
 		'<meta property="og:url" content="'+options.baseUrl+'" />' +
-		'<meta property="og:image" content="'+options.baseUrl+'" />' +
+		'<meta property="og:image" content="'+options.baseUrl+options.poster+'" />' +
 		'<meta property="og:description" content="Aнатолий Алексеевич Гуськов - стихи" />' +
 		'<meta property="og:site_name" content="A.A.Guskov" />' +
 		'</head>'
@@ -36,10 +36,10 @@ router.get('/all', function(req, res) {
                 '<meta name="description" content="Aнатолий Гуськов - все стихи" />' +
                 '<meta name="twitter:card" value="Aнатолий Гуськов - все стихи">' +
                 // Open Graph data
-                '<meta property="og:title" content="Aнатолий Гуськов - все стихи" />' +
+                '<meta property="og:title" content="Aнатолий Гуськов - стихи" />' +
                 '<meta property="og:type" content="website" />' +
                 '<meta property="og:url" content="'+options.baseUrl+'/all">' +
-                '<meta property="og:image" content="'+options.baseUrl+'" />' +
+                '<meta property="og:image" content="'+options.baseUrl+options.poster+'" />' +
                 '<meta property="og:description" content="Aнатолий Алексеевич Гуськов - все стихи" />' +
                 '<meta property="og:site_name" content="A.A.Guskov" />' +
                 '</head><body>';
@@ -84,10 +84,10 @@ router.get('/poem', function(req, res) {
             	'<meta name="description" content="'+article.description+'" />' +
             	'<meta name="twitter:card" value="'+article.description+'">' +
                 // Open Graph data
-            	'<meta property="og:title" content="'+article.title+'" />' +
+            	'<meta property="og:title" content="'+options.author+': '+article.title+'." />' +
                 '<meta property="og:type" content="website" />' +
                 '<meta property="og:url" content="'+options.baseUrl+'/poem?id='+article.id+'" />' +
-                '<meta property="og:image" content="'+options.baseUrl+'/assets/images/body4.jpg" />' +
+                '<meta property="og:image" content="'+options.baseUrl+options.poster+'" />' +
                 '<meta property="og:description" content="'+article.description+'" />' +
                 '<meta property="og:site_name" content="A.A.Guskov" />' +
 				'</head>'
