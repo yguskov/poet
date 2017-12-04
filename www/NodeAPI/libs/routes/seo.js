@@ -9,36 +9,57 @@ var db = require(libs + 'db/mongoose');
 var Article = require(libs + 'model/article');
 var ogs = require('open-graph-scraper');
 
-const options = {'url': 'http://agu/'};
+const options = {'baseUrl': 'http://gus.181.rsdemo.ru', 'poster' : '/assets/images/body4.jpg'};
 
 router.get('/', function(req, res) {
-	
-	Article.find(function (err, articles) {
-		if (!err) {
-            return res.send('<head>' +
-                '<title>Aнатолий Гуськов - стихи</title>' +
-                '<meta name="description" content="Aнатолий Гуськов - стихи" />' +
-                '<meta name="twitter:card" value="Aнатолий Гуськов - стихи">' +
-                // Open Graph data
-                '<meta property="og:title" content="Aнатолий Гуськов - стихи" />' +
-                '<meta property="og:type" content="website" />' +
-                '<meta property="og:url" content="http://gus.181.rsdemo.ru" />' +
-                '<meta property="og:image" content="http://gus.181.rsdemo.ru/assets/images/body4.jpg" />' +
-                '<meta property="og:description" content="Aнатолий Алексеевич Гуськов - стихи" />' +
-                '<meta property="og:site_name" content="A.A.Guskov" />' +
-                '</head>'
-            );
-		} else {
-			res.statusCode = 500;
-			
-			log.error('Internal error(%d): %s',res.statusCode,err.message);
-			
-			return res.json({ 
-				error: 'Server error' 
-			});
-		}
-	});
+	return res.send('<head>' +
+		'<title>Aнатолий Гуськов - стихи</title>' +
+		'<meta name="description" content="Aнатолий Гуськов - стихи" />' +
+		'<meta name="twitter:card" value="Aнатолий Гуськов - стихи">' +
+		// Open Graph data
+		'<meta property="og:title" content="Aнатолий Гуськов - стихи" />' +
+		'<meta property="og:type" content="website" />' +
+		'<meta property="og:url" content="'+options.baseUrl+'" />' +
+		'<meta property="og:image" content="'+options.baseUrl+'" />' +
+		'<meta property="og:description" content="Aнатолий Алексеевич Гуськов - стихи" />' +
+		'<meta property="og:site_name" content="A.A.Guskov" />' +
+		'</head>'
+		);
 });
+
+router.get('/all', function(req, res) {
+
+    Article.find(function (err, articles) {
+        if (!err) {
+            var html = '<head>' +
+                '<title>Aнатолий Гуськов - стихи</title>' +
+                '<meta name="description" content="Aнатолий Гуськов - все стихи" />' +
+                '<meta name="twitter:card" value="Aнатолий Гуськов - все стихи">' +
+                // Open Graph data
+                '<meta property="og:title" content="Aнатолий Гуськов - все стихи" />' +
+                '<meta property="og:type" content="website" />' +
+                '<meta property="og:url" content="'+options.baseUrl+'/all">' +
+                '<meta property="og:image" content="'+options.baseUrl+'" />' +
+                '<meta property="og:description" content="Aнатолий Алексеевич Гуськов - все стихи" />' +
+                '<meta property="og:site_name" content="A.A.Guskov" />' +
+                '</head><body>';
+            for(var i=0; i < articles.length; i++) {
+            	html += '<a href="'+options.baseUrl+'/poem?id='+articles[i].id+'">'+articles[i].title+"</a>";
+			}
+			html += '</body>';
+            return res.send(html);
+        } else {
+            res.statusCode = 500;
+
+            log.error('Internal error(%d): %s',res.statusCode,err.message);
+
+            return res.json({
+                error: 'Server error'
+            });
+        }
+    });
+});
+
 
 router.get('/poem', function(req, res) {
 	
@@ -65,8 +86,8 @@ router.get('/poem', function(req, res) {
                 // Open Graph data
             	'<meta property="og:title" content="'+article.title+'" />' +
                 '<meta property="og:type" content="website" />' +
-                '<meta property="og:url" content="http://gus.181.rsdemo.ru/poem?id='+article.id+'" />' +
-                '<meta property="og:image" content="http://gus.181.rsdemo.ru/assets/images/body4.jpg" />' +
+                '<meta property="og:url" content="'+options.baseUrl+'/poem?id='+article.id+'" />' +
+                '<meta property="og:image" content="'+options.baseUrl+'/assets/images/body4.jpg" />' +
                 '<meta property="og:description" content="'+article.description+'" />' +
                 '<meta property="og:site_name" content="A.A.Guskov" />' +
 				'</head>'
@@ -87,54 +108,6 @@ router.get('/poem', function(req, res) {
                 });
             }
 		}
-	});
-});
-
-router.put('/:id', passport.authenticate('bearer', { session: false }), function (req, res){
-	var articleId = req.params.id;
-
-	Article.findById(articleId, function (err, article) {
-		if(!article) {
-			res.statusCode = 404;
-			log.error('Article with id: %s Not Found', articleId);
-			return res.json({ 
-				error: 'Not found' 
-			});
-		}
-
-        var quatrains = req.body.text.split("\n\n");
-
-		article.title = req.body.title;
-		article.description = quatrains[0];
-		article.text = req.body.text;
-		// article.author = req.body.author;
-		// article.images = req.body.images;
-
-		article.save(function (err) {
-			if (!err) {
-				log.info("Article with id: %s updated", article.id);
-                // res.redirect('/articles/all');
-				return res.json({ 
-					status: 'OK', 
-					article:article 
-				});
-			} else {
-                log.info("error %s now", err);
-				if(err.name === 'ValidationError') {
-					res.statusCode = 400;
-					return res.json({ 
-						error: 'Validation error' + err.message
-					});
-				} else {
-					res.statusCode = 500;
-					
-					return res.json({ 
-						error: 'Server error' 
-					});
-				}
-				log.error('Internal error (%d): %s', res.statusCode, err.message);
-			}
-		});
 	});
 });
 

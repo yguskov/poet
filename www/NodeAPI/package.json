@@ -1,8 +1,8 @@
 {
-  "name": "NodeAPI",
+  "name": "Poet",
   "version": "1.0.0",
-  "author": "Evgeny Aleksandrov",
-  "description": "Simple example of RESTful API with Node.js and passport",
+  "author": "Yury guskov",
+  "description": "Simple of RESTful API with Node.js and passport that returns poems",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -45,5 +45,8 @@
     "browser": true,
     "node": true
   },
-  "license": "MIT"
+  "license": "MIT",
+  "main": "generateAdmin.js",
+  "devDependencies": {},
+  "keywords": []
 }
