@@ -1,7 +1,7 @@
 {
-  "name": "Poet",
-  "version": "1.0.0",
-  "author": "Yury guskov",
+  "name": "poet",
+  "version": "1.0.1",
+  "author": "Yury Guskov",
   "description": "Simple of RESTful API with Node.js and passport that returns poems",
   "private": true,
   "scripts": {
@@ -48,5 +48,13 @@
   "license": "MIT",
   "main": "generateAdmin.js",
   "devDependencies": {},
-  "keywords": []
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yguskov/poet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yguskov/poet/issues"
+  },
+  "homepage": "https://github.com/yguskov/poet#readme"
 }
