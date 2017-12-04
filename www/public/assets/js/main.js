@@ -30,7 +30,7 @@ var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel',
         $routeProvider.otherwise( {  } );
         $locationProvider.html5Mode({ enabled: true, requireBase: false, rewriteLinks: false });
     })
-    .run(function($rootScope, $location) { $rootScope.location = $location; $rootScope.author = { name: 'Анатолий Гуськов'}; $rootScope.baseUrl = 'http://gus.181.rsdemo.ru'; });
+    .run(function($rootScope, $location) { $rootScope.location = $location; $rootScope.author = { name: 'Анатолий Гуськов'}; $rootScope.baseUrl = 'http://aguskov.org'; });
 
 app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', function($scope, $http, $location, $window, $sce) {
     $scope.seo = { title: 'Aнатолий Гуськов - стихи', description: 'Aнатолий Алексеевич Гуськов - стихи' };
@@ -99,7 +99,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
 
 //            var req = {
 //                method: 'POST',
-//                url: 'http://gus.181.rsdemo.ru/api/oauth/token',
+//                url: 'http://aguskov.org/api/oauth/token',
 //                headers: {
 //                    'Content-Type': 'application/json'
 //                },
@@ -118,7 +118,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
             $scope.selected.split(' ').forEach(function (word) {
                 $scope.stems.push(stemmer.stemWord(word));
             });
-            $http.get('http://gus.181.rsdemo.ru/api/articles/search/'+ $scope.selected, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
+            $http.get('http://aguskov.org/api/articles/search/'+ $scope.selected, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
                 for (var i = 0; i < resp.data.length; i++) {
                     $scope.states.push({
                         'id': resp.data[i]._id,
@@ -210,7 +210,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
 
     $scope.open = function(id) {
         if(id!=0) {
-            // $location.path('http://gus.181.rsdemo.ru/#!?poem='+id);
+            // $location.path('http://aguskov.org/#!?poem='+id);
             $location.path('poem');
             $location.search('id', id);
 
@@ -228,7 +228,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
 
     $scope.save = function() {
         if($scope.model._id==undefined) {
-            $http.post('http://gus.181.rsdemo.ru/api/articles', $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
+            $http.post('http://aguskov.org/api/articles', $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
                 .then(function (resp) {
                     $scope.list.push(resp.data.article);
                     $('#edit').fadeOut(300, function () {
@@ -237,7 +237,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
                 });
         }
         else {
-            $http.put('http://gus.181.rsdemo.ru/api/articles/' + $scope.model._id, $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
+            $http.put('http://aguskov.org/api/articles/' + $scope.model._id, $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
                 .then(function (resp) {
                     var i = $scope.list.findIndex(function(item) { return item._id==resp.data.article._id });
                     $scope.list[i] = resp.data.article;
@@ -249,7 +249,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
         }
 
         //
-        // $http.put('http://gus.181.rsdemo.ru/api/articles/'+id, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
+        // $http.put('http://aguskov.org/api/articles/'+id, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
         //     $scope.model = resp.data.article;
         //     $('#all').fadeOut( 300, function() {
         //         $('#edit').fadeIn(600);
