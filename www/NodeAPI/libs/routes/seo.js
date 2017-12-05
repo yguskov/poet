@@ -9,7 +9,7 @@ var db = require(libs + 'db/mongoose');
 var Article = require(libs + 'model/article');
 var ogs = require('open-graph-scraper');
 
-const options = {'baseUrl': 'http://aguskov.org', 'poster' : '/assets/images/aguskov.jpg', 'author':'А.Гуськов'};
+const options = {'baseUrl': 'http://aguskov.org', 'poster' : '/assets/images/poster.jpg', 'author':'А.Гуськов'};
 
 router.get('/', function(req, res) {
 	return res.send('<head>' +
