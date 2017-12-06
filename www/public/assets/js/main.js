@@ -30,7 +30,11 @@ var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel',
         $routeProvider.otherwise( {  } );
         $locationProvider.html5Mode({ enabled: true, requireBase: false, rewriteLinks: false });
     })
-    .run(function($rootScope, $location) { $rootScope.location = $location; $rootScope.author = { name: 'Анатолий Гуськов'}; $rootScope.baseUrl = 'http://aguskov.org'; });
+    .run(function($rootScope, $location) {
+        $rootScope.location = $location;
+        $rootScope.author = { name: 'Анатолий Гуськов'};
+        $rootScope.baseUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+    });
 
 app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', function($scope, $http, $location, $window, $sce) {
     $scope.seo = { title: 'Aнатолий Гуськов - стихи', description: 'Aнатолий Алексеевич Гуськов - стихи' };
@@ -80,8 +84,6 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
             $scope.article = resp.data.article;
             $scope.article.quatrains = resp.data.article.text.split("\n\n");
             $scope.seo = { title: resp.data.article.title, description: resp.data.article.description };
-            // resp.data.article.title.charAt(0).toUpperCase() + resp.data.article.title.toLowerCase().slice(1)
-            // $scope.$apply();
             current_item = 1;
             $scope.showSection('#about');
         });
@@ -97,18 +99,6 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
 
     $scope.init = function () {
 
-//            var req = {
-//                method: 'POST',
-//                url: 'http://aguskov.org/api/oauth/token',
-//                headers: {
-//                    'Content-Type': 'application/json'
-//                },
-//                data: {test: 'test'}
-//            };
-//
-//            $http(req).then(function() { alert('success'); }, function(){  });
-        // http POST http://localhost:1337/api/oauth/token
-
     };
 
     $scope.onedit = function() {
@@ -118,7 +108,8 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
             $scope.selected.split(' ').forEach(function (word) {
                 $scope.stems.push(stemmer.stemWord(word));
             });
-            $http.get('http://aguskov.org/api/articles/search/'+ $scope.selected, { headers: { Authorization:'Bearer '+localStorage.getItem('token') } }).then(function(resp) {
+
+            $scope.askApi('get', '/api/articles/search/'+$scope.selected, {}, function (resp) {
                 for (var i = 0; i < resp.data.length; i++) {
                     $scope.states.push({
                         'id': resp.data[i]._id,
@@ -193,7 +184,6 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
     $scope.edit = function(id) {
         if(id!=0) {
             $scope.askApi('get', '/api/articles/'+id, {}, function (resp) {
-                console.log('open edit poem');
                 $scope.model = resp.data.article;
                 $('#all').fadeOut(300, function () {
                     $('#edit').fadeIn(600);
