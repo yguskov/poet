@@ -382,3 +382,18 @@ a:hover, a:active { color:#fff; text-decoration: underline; }
 }
 
 .sharebuttons .fa { margin-bottom: 9px }
+
+.slick-prev:before, .slick-next:before {
+	font-size: 30px !important;
+	opacity: .90 !important;
+	color: white !important;
+}
+
+.slick-prev {
+	left: -35px !important;
+}
+
+.slick-dots li button:before {
+    font-size: 16px !important;
+    opacity: .35;
+}
