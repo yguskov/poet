@@ -279,6 +279,10 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
         return !(typeof thing === "undefined");
     };
 
+    $scope.seoUrl = function(articleId) {
+        return $scope.baseUrl+'/seo/poem?id='+articleId;
+    };
+
     /**
      * Request to api
      * @param method

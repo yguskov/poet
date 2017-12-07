@@ -79,7 +79,7 @@ router.get('/poem', function(req, res) {
 			//   console.log('results:', results);
 			// });
 
-			return res.send('<head>' +
+			return res.send('<html><head>' +
                 '<title>'+article.title+'</title>' +
             	'<meta name="description" content="'+article.description+'" />' +
             	'<meta name="twitter:card" value="'+article.description+'">' +
@@ -90,7 +90,8 @@ router.get('/poem', function(req, res) {
                 '<meta property="og:image" content="'+options.baseUrl+options.poster+'" />' +
                 '<meta property="og:description" content="'+article.description+'" />' +
                 '<meta property="og:site_name" content="A.A.Guskov" />' +
-				'</head>'
+				'</head><body><script>document.location.href="'+options.baseUrl+'/poem?id='+article.id+'";'+
+                '</script></body></html>'
 			);
 		} else {
             if(err.name === 'ValidationError') {
