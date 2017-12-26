@@ -30,7 +30,7 @@ app.use('/api', api);
 app.use('/api/users', users);
 app.use('/api/articles', articles);
 app.use('/api/oauth/token', oauth2.token);
-app.use('/seo', seo);
+app.use('/pub', seo);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next){

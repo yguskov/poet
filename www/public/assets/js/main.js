@@ -280,7 +280,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
     };
 
     $scope.seoUrl = function(articleId) {
-        return $scope.baseUrl+'/seo/poem?id='+articleId;
+        return $scope.baseUrl+'/pub/poem?id='+articleId;
     };
 
     /**
