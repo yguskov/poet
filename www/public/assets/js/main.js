@@ -74,6 +74,9 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
                 $scope.showSection('#all');
                 $scope.seo = { title: 'все стихи', description: 'Aнатолий Алексеевич Гуськов - все стихи' };
                 break;
+            case '/photo' :
+                $scope.showSection('#photo');
+                break;
         }
     });
 
@@ -151,6 +154,10 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
 
             case '#all' :
                 $location.path('/all');
+                break;
+
+            case '#photo' :
+                $location.path('/photo');
                 break;
         }
 
