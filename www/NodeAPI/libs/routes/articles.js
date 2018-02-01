@@ -9,8 +9,8 @@ var db = require(libs + 'db/mongoose');
 var Article = require(libs + 'model/article');
 
 router.get('/', passport.authenticate('bearer', { session: false }), function(req, res) {
-	
-	Article.find(function (err, articles) {
+    log.info('req.user.username:'+req.user.username);
+	Article.find({}, null, {sort: {position: 1}}, function (err, articles) {
 		if (!err) {
 			return res.json(articles);
 		} else {
@@ -151,13 +151,18 @@ router.put('/:id', passport.authenticate('bearer', { session: false }), function
 			});
 		}
 
-        var quatrains = req.body.text.split("\n\n");
+		if(req.body.position != undefined) {
+            article.position = req.body.position;
+		}
+		else {
+            var quatrains = req.body.text.split("\n\n");
 
-		article.title = req.body.title;
-		article.description = quatrains[0];
-		article.text = req.body.text;
-		// article.author = req.body.author;
-		// article.images = req.body.images;
+            article.title = req.body.title;
+            article.description = quatrains[0];
+            article.text = req.body.text;
+            // article.author = req.body.author;
+            // article.images = req.body.images;
+		}
 
 		article.save(function (err) {
 			if (!err) {

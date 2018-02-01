@@ -11,7 +11,7 @@ var section_show_time = 600;
 
 var pageSize = 6;
 
-var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel', 'ngRoute', '720kb.socialshare'])
+var app = angular.module('myApp', ['ui.bootstrap', 'ngAnimate', 'slickCarousel', 'ngRoute', '720kb.socialshare', 'dndLists'])
     .filter('nl2br', ['$sce', function($sce){
         return function(val) {
             var str =  val.replace(/\n/g, '<br>');
@@ -304,6 +304,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
             headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
             data: parameters
         }).then(callback, function onError(response) {
+            console.log(response);
             $scope.authApi(method, url, parameters, callback);
         });
     }
@@ -378,6 +379,66 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
             return items.slice(Math.ceil(items.length / 2), items.length);
         }
     }
+
+
+    /*** to sort ***/
+    /**** ***** ****/
+
+    $scope.loadAllArticles = function() {
+        $scope.sortFrom = null;
+        $scope.sortTo = null;
+
+        if($scope.list==undefined) $scope.askApi('get', '/api/articles/', {}, function(resp) {
+            $scope.list = resp.data;
+            // $scope.models = {
+            //     selected: null,
+            //     lists: {"A": [], "B": []}
+            // };
+
+            // Generate initial model
+            // for (var i = 1; i <= 3; ++i) {
+            //     $scope.models.lists.A.push({label: "Item A" + i});
+            //     $scope.models.lists.B.push({label: "Item B" + i});
+            // }
+            // return $scope.models;
+
+        });
+    }
+
+    // Model to JSON for demo purpose
+    // $scope.$watch('models', function(model) {
+    //     $scope.modelAsJson = angular.toJson(model, true);
+    // }, true);
+
+    $scope.dragCallback = function(index, item, external) {
+        $scope.sortFrom = index;
+        return true;
+    };
+
+    $scope.dropCallback = function(index, item, external) {
+        $scope.sortTo = index;
+        console.log($scope.sortFrom + ' -> ' + $scope.sortTo);
+
+        if($scope.sortFrom+1<$scope.sortTo) {
+            for(var i=$scope.sortFrom+1; i < $scope.sortTo; i++) {
+                var article = $scope.list[i];
+                $scope.askApi('put', '/api/articles/' + article._id, {'position': i-1 }, function (data) { });
+            }
+            $scope.askApi('put', '/api/articles/' + $scope.list[$scope.sortFrom]._id , {'position': $scope.sortTo }, function (data) { });
+        }
+        else if($scope.sortFrom>$scope.sortTo) {
+            for(var i=$scope.sortFrom-1; i >= $scope.sortTo; i--) {
+                var article = $scope.list[i];
+                $scope.askApi('put', '/api/articles/' + article._id, {'position': i+1 }, function (data) { });
+            }
+            $scope.askApi('put', '/api/articles/' + $scope.list[$scope.sortFrom]._id , {'position': $scope.sortTo }, function (data) { });
+        }
+        //
+
+        return item;
+    };
+
+    /****** * ******/
 }]);
 
 /**

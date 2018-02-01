@@ -48,6 +48,7 @@
 
 	<!-- Custom styles -->
 	<link rel="stylesheet" href="assets/css/magister.css">
+	<link rel="stylesheet" href="assets/css/order.css">
 
 	<!-- Fonts -->
 	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -87,29 +88,42 @@
 <body class="theme-invert">
 
 <!-- Search -->
+<link rel="stylesheet" href="assets/css/magister.css">
+<pre>
+{{ containers }}
+</pre>
 
 	<div class="container">
 		<div class="row">
-			<div class="col-sm-8  col-sm-offset-2">
-				<!----------------------- Search block ------------------->
-				<div>
-					<div class='container-fluid'>
-						<br>
-						<form>
-							<div class="form-group">
-								<label for="username">Логин</label>
-								<input class="form-control" ng-model="user.username" name="username" type="text" placeholder="логин">
-							</div>
-							<div class="form-group">
-								<label for="password">Пароль</label>
-								<input class="form-control" ng-model="user.password" name="password" type="password" placeholder="пароль">
-							</div>
-							<button type="submit" ng-click="login()" class="btn btn-default">Зайти под админом</button>
-							<button type="submit" ng-click="logout()" class="btn btn-primary">Стать обычным пользователем</button>
-						</form>
+			<div class="col-sm-8  col-sm-offset-2" ng-init="loadAllArticles()">
+
+				<div class="simpleDemo">
+					<div class="panel panel-info">
+						<div class="panel-heading">
+							<h3 class="panel-title">Все стихи по порядку</h3>
+						</div>
+						<ul dnd-list="list"
+							dnd-drop="dropCallback(index, item, external)"
+
+						>
+							<!-- The dnd-draggable directive makes an element draggable and will
+								 transfer the object that was assigned to it. If an element was
+								 dragged away, you have to remove it from the original list
+								 yourself using the dnd-moved attribute -->
+							<li ng-repeat="item in list"
+								dnd-dragstart="dragCallback($index, item, external)"
+								dnd-draggable="item"
+								dnd-moved="list.splice($index, 1)"
+								dnd-effect-allowed="move"
+								ng-class="{'selected': selectedArticle === item}"
+								dnd-selected="selectedArticle = item"
+								currentIndex="{{$index}}"
+							>
+								{{$index}} - {{ item.title}} - {{ item.position }}
+							</li>
+						</ul>
 					</div>
 				</div>
-				<!---------------------------end-------------------------->
 			</div>
 		</div>
 

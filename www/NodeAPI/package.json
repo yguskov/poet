@@ -27,9 +27,8 @@
     "slick-carousel": "^1.8.1",
     "angular-slick-carousel": "^3.1.7",
     "angular-route": "^1.6.7",
-    "jquery": "^3.2.1"
-
-
+    "jquery": "^3.2.1",
+    "angular-drag-and-drop-lists":"*"
   },
   "jshintConfig": {
     "curly": true,

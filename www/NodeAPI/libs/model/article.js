@@ -17,7 +17,8 @@ var Article = new Schema({
 	description: { type: String, required: true },
     text: { type: String, required: true },
 	images: [Images],
-	modified: { type: Date, default: Date.now }
+	modified: { type: Date, default: Date.now },
+	position: {type: Number, required: true, default: 999 }
 });
 
 Article.path('title').validate(function (v) {
