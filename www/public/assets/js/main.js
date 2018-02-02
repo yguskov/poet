@@ -225,17 +225,15 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
 
     $scope.save = function() {
         if($scope.model._id==undefined) {
-            $http.post('http://aguskov.org/api/articles', $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
-                .then(function (resp) {
-                    $scope.list.push(resp.data.article);
-                    $('#edit').fadeOut(300, function () {
-                        $('#all').fadeIn(600);
-                    });
+            $scope.askApi('post', '/api/articles', $scope.model, function (resp) {
+                $scope.list.push(resp.data.article);
+                $('#edit').fadeOut(300, function () {
+                    $('#all').fadeIn(600);
                 });
+            });
         }
         else {
-            $http.put('http://aguskov.org/api/articles/' + $scope.model._id, $scope.model, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Content-Type': 'application/json'} })
-                .then(function (resp) {
+            $scope.askApi('put', '/api/articles/' + $scope.model._id, $scope.model, function (resp) {
                     var i = $scope.list.findIndex(function(item) { return item._id==resp.data.article._id });
                     $scope.list[i] = resp.data.article;
 

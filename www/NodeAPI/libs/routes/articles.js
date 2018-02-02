@@ -151,12 +151,11 @@ router.put('/:id', passport.authenticate('bearer', { session: false }), function
 			});
 		}
 
-		if(req.body.position != undefined) {
+		if(req.body.position != undefined && req.body.text == undefined) {
             article.position = req.body.position;
 		}
 		else {
             var quatrains = req.body.text.split("\n\n");
-
             article.title = req.body.title;
             article.description = quatrains[0];
             article.text = req.body.text;
