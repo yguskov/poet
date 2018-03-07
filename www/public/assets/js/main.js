@@ -277,7 +277,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
     }
 
     $scope.isAdmin = function() {
-        return !(typeof localStorage.getItem('username') === 'object');
+        return localStorage.getItem('username') !== null && localStorage.getItem('username') !== 'myapi';
     }
 
     $scope.isDefined = function (thing) {
