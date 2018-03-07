@@ -44,7 +44,7 @@ User.virtual('password')
 
 
 User.methods.checkPassword = function(password) {
-	return true || this.encryptPassword(password) === this.hashedPassword;
+	return this.encryptPassword(password) === this.hashedPassword;
 };
 
 module.exports = mongoose.model('User', User);

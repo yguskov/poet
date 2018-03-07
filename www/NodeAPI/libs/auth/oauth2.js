@@ -60,7 +60,7 @@ var generateTokens = function (data, done) {
 
 // Exchange username & password for access token.
 aserver.exchange(oauth2orize.exchange.password(function(client, username, password, scope, done) {
-	
+console.info('check the password '+password+' of '+username);
 	User.findOne({ username: username }, function(err, user) {
 		
 		if (err) { 
