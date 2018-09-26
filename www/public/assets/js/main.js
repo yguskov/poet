@@ -57,7 +57,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
         //             $location.path("/login");
         //         }
         //     }
-
+        var new_url = $location.path();
         switch($location.path()) {
             case '/' :
                 $scope.showSection('#head');
@@ -68,6 +68,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
                 break;
             case '/poem' :
                 $scope.openPoem($location.search().id);
+                new_url = new_url + '?id='+$location.search().id;
                 break;
             case '/all' :
                 $scope.listAll();
@@ -78,6 +79,8 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
                 $scope.showSection('#photo');
                 break;
         }
+        ga_move(new_url);
+
     });
 
     var stemmer = new RussianStemmer();
@@ -564,6 +567,13 @@ function createSlick(){
         }]
     });
 
+}
+
+function ga_move(url) {
+    if(ga !== undefined) {
+        ga('set', 'page', url);
+        ga('send', 'pageview');
+    }
 }
 
 // createSlick();
