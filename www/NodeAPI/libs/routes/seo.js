@@ -9,13 +9,10 @@ var db = require(libs + 'db/mongoose');
 var Article = require(libs + 'model/article');
 var ogs = require('open-graph-scraper');
 
-var ga = "<!-- Global site tag (gtag.js) - Google Analytics --><script async src=\"https://www.googletagmanager.com/gtag/js?id=UA-126380096-1\"></script><script>"+
-         "window.dataLayer = window.dataLayer || [];  function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-126380096-1');</script>";
-
 var options = {'baseUrl': function(req) { return 'http://'+req.hostname; }, 'poster' : '/assets/images/ag_thumb.png', 'author':'А.Гуськов'};
 
 router.get('/', function(req, res) {
-	return res.send('<!DOCTYPE html><html><head>' + ga +
+	return res.send('<!DOCTYPE html><html><head>' +
 		'<title>Aнатолий Гуськов - стихи</title>' +
 		'<meta name="description" content="Aнатолий Гуськов - стихи" />' +
 		// Open Graph data
@@ -36,7 +33,7 @@ router.get('/all', function(req, res) {
 
     Article.find(function (err, articles) {
         if (!err) {
-            var html = '<!DOCTYPE html><html><head>' + ga +
+            var html = '<!DOCTYPE html><html><head>' +
                 '<title>Aнатолий Гуськов - стихи</title>' +
                 '<meta name="description" content="Aнатолий Гуськов - все стихи" />' +
                 // Open Graph data
@@ -83,7 +80,7 @@ router.get('/poem', function(req, res) {
 			//   console.log('results:', results);
 			// });
 
-			return res.send('<!DOCTYPE html><html><head>' + ga +
+			return res.send('<!DOCTYPE html><html><head>' +
                 '<title>'+article.title+'</title>' +
             	'<meta name="description" content="'+article.description+'" />' +
                 // Open Graph data
