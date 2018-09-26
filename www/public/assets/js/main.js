@@ -65,6 +65,7 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
                 break;
             case '/search' :
                 $scope.showSection('#search');
+                $scope.seo = { title: 'поиск', description: 'Aнатолий Алексеевич Гуськов - поиск' };
                 break;
             case '/poem' :
                 $scope.openPoem($location.search().id);
@@ -77,10 +78,10 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
                 break;
             case '/photo' :
                 $scope.showSection('#photo');
+                $scope.seo = { title: 'фото', description: 'Aнатолий Алексеевич Гуськов - фото' };
                 break;
         }
-        ga_move(new_url);
-
+        setTimeout(function() { ga_move(new_url, $scope.seo.title) }, 300);
     });
 
     var stemmer = new RussianStemmer();
@@ -569,9 +570,9 @@ function createSlick(){
 
 }
 
-function ga_move(url) {
+function ga_move(url, title) {
     if(ga !== undefined) {
-        ga('set', 'page', url);
+        ga('set', {page: url, title: title});
         ga('send', 'pageview');
     }
 }
