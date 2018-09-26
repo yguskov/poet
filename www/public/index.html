@@ -1,15 +1,14 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="myApp" ng-controller="common">
 <head>
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-126380096-1"></script>
+	<!-- Google Analytics -->
 	<script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-
-        gtag('config', 'UA-126380096-1');
+        window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+        ga('create', 'UA-126380096-1', 'auto');
+        setTimeout(function() { ga_move(document.location.href, document.title) }, 300);
 	</script>
+	<script async src='https://www.google-analytics.com/analytics.js'></script>
+	<!-- End Google Analytics -->
 
 	<meta charset="utf-8">
 	<meta name="viewport"    content="width=device-width, initial-scale=1.0">

@@ -306,7 +306,6 @@ app.controller('common', [ '$scope', '$http', '$location',  '$window', '$sce', f
             headers: {Authorization: 'Bearer ' + localStorage.getItem('token')},
             data: parameters
         }).then(callback, function onError(response) {
-            console.log(response);
             $scope.authApi(method, url, parameters, callback);
         });
     }
